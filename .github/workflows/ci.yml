@@ -21,4 +21,20 @@ jobs:
 
       - name: Deploy via Docker Compose
         run: |
-          IMAGE_TAG=${IMAGE_TAG} docker compose up -d
+          export IMAGE_TAG=${IMAGE_TAG}
+          echo "Deploying with image tag: ${IMAGE_TAG}"
+          docker compose -f docker-compose.prod.yml down || true
+          docker compose -f docker-compose.prod.yml pull
+          docker compose -f docker-compose.prod.yml up -d
+          
+      - name: Verify deployment
+        run: |
+          echo "Waiting for container to start..."
+          sleep 10
+          docker compose -f docker-compose.prod.yml ps
+          echo "Testing if site is accessible..."
+          curl -f http://localhost:5080 || (echo "Site not accessible" && exit 1)
+          
+      - name: Clean up old images
+        run: |
+          docker system prune -f --filter "until=24h"
