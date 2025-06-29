@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   portfolio:
@@ -18,4 +18,4 @@ services:
 
 networks:
   portfolio_network:
-    driver: bridge 
+    driver: bridge
